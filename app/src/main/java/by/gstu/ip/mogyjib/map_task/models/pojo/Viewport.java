@@ -1,4 +1,4 @@
-package by.gstu.ip.mogyjib.map_task.models;
+package by.gstu.ip.mogyjib.map_task.models.pojo;
 
 public class Viewport {
     public Location southwest;

@@ -1,4 +1,4 @@
-package by.gstu.ip.mogyjib.map_task.models;
+package by.gstu.ip.mogyjib.map_task.models.pojo;
 
 public class MyPlaces {
     public String next_page_token;
@@ -11,5 +11,11 @@ public class MyPlaces {
         this.results = results;
         this.html_attributions = html_attributions;
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+       return  "pagetoken   "+next_page_token+"\n"+
+                "result size:   "+results.length;
     }
 }

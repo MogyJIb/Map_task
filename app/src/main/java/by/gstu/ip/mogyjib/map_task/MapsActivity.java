@@ -18,23 +18,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import by.gstu.ip.mogyjib.map_task.handlers.LocationHandler;
 import by.gstu.ip.mogyjib.map_task.remote.GoogleMapsAPIService;
+
+import static by.gstu.ip.mogyjib.map_task.handlers.LocationHandler.MAX_DISTANCE;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback{
 
 
     private static final String TAG = MapsActivity.class.getSimpleName();
-
     private GoogleMap mMap;
-    private Marker mMarker;
-
-    LocationHandler mLocationHandler;
-    GoogleMapsAPIService mMapsAPIService;
+    private LocationHandler mLocationHandler;
+    private Location mLastLocation;
 
 
     @Override
@@ -50,7 +51,6 @@ public class MapsActivity extends AppCompatActivity
                         .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mMapsAPIService = new GoogleMapsAPIService();
 
         mLocationHandler=new LocationHandler(this,new LocationCallback(){
             @Override
@@ -73,14 +73,33 @@ public class MapsActivity extends AppCompatActivity
                 .position(latLng)
                 .title("Your position")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        mMarker = mMap.addMarker(markerOptions);
-
+        mMap.addMarker(markerOptions);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-        mMapsAPIService.buildUrl(location,2000,getResources().getString(R.string.browser_google_maps_key));
-        mMapsAPIService.searchPlaces(mMap);
+        if (mLastLocation != null) {
+            double distance = LocationHandler.getDistance(mLastLocation, location);
+            if (distance>MAX_DISTANCE){
+                mLastLocation = location;
+                searchPlaces(location);
+            }
+        }else {
+            mLastLocation = location;
+            searchPlaces(location);
+        }
+    }
+
+    private void searchPlaces(Location location){
+        Map<String,String> parameters = getParametersAsMap(location,
+                getResources().getString(R.string.browser_google_maps_key),
+                "atm",
+                5000);
+
+        new GoogleMapsAPIService(mMap)
+                .buildUrl(parameters)
+                .execute();
+
     }
 
     @Override
@@ -125,5 +144,15 @@ public class MapsActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    private Map<String,String> getParametersAsMap(Location location,String key, String type,int radius){
+        Map<String,String> parameters = new HashMap<>();
+        parameters.put("location",
+                location.getLatitude()+","+location.getLongitude());
+        parameters.put("radius",radius+"");
+        parameters.put("key",key);
+        parameters.put("type",type);
+        return parameters;
     }
 }

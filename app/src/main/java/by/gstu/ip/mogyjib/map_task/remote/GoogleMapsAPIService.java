@@ -1,85 +1,113 @@
 package by.gstu.ip.mogyjib.map_task.remote;
 
 import android.location.Location;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import by.gstu.ip.mogyjib.map_task.handlers.LocationHandler;
-import by.gstu.ip.mogyjib.map_task.models.MyPlaces;
-import by.gstu.ip.mogyjib.map_task.models.Result;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import by.gstu.ip.mogyjib.map_task.models.GooglePlacesApiUrl;
+import by.gstu.ip.mogyjib.map_task.models.pojo.MyPlaces;
+import by.gstu.ip.mogyjib.map_task.models.pojo.Result;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GoogleMapsAPIService {
-    public static final String GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/";
+import static by.gstu.ip.mogyjib.map_task.models.GooglePlacesApiUrl.GOOGLE_MAPS_API_URL;
+
+public class GoogleMapsAPIService extends AsyncTask<Object,String,List<MarkerOptions>>{
+    public static final String TAG = GoogleMapsAPIService.class.getSimpleName();
+
     private IGoogleAPIService mService;
-    private String url;
+    private GooglePlacesApiUrl mUrl;
+    private GoogleMap mGoogleMap;
 
-    public GoogleMapsAPIService(){
-        this(GOOGLE_MAPS_API_URL);
+    public GoogleMapsAPIService(GoogleMap googleMap){
+        this(GOOGLE_MAPS_API_URL,googleMap);
     }
 
-    public GoogleMapsAPIService(String baseUrl) {
-        mService = getRetrofitClient(baseUrl)
-                .create(IGoogleAPIService.class);
+    public GoogleMapsAPIService(String baseUrl,GoogleMap googleMap) {
+        mService = new ServiceGenerator(baseUrl)
+                .createService(IGoogleAPIService.class);
+
+        mGoogleMap = googleMap;
+        mUrl = new GooglePlacesApiUrl();
     }
 
-    private Retrofit getRetrofitClient(String baseUrl){
-        return new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
+
+    public GoogleMapsAPIService buildUrl(Map<String,String> parameters){
+        mUrl.setParameters(parameters);
+        mUrl.build();
+
+        return this;
     }
 
-    public void buildUrl(Location location,int radius,String key){
-        StringBuilder url = new StringBuilder("");
-        url.append(GOOGLE_MAPS_API_URL);
-        url.append("maps/api/place/nearbysearch/json?");
-        url.append("location="+location.getLatitude()+
-                ","+location.getLongitude());
-        url.append("&radius="+radius);
-        url.append("&key="+key);
-        this.url = url.toString();
+
+    private List<MarkerOptions> processResults(Result[] results){
+        List<MarkerOptions> markers = new ArrayList<>();
+        for (Result result : results) {
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            LatLng latLng = new LatLng(result.geometry.location.lat,
+                    result.geometry.location.lng);
+            markerOptions.position(latLng);
+            markerOptions.title(result.name);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            markers.add(markerOptions);
+        }
+        return markers;
     }
 
-    public void searchPlaces(GoogleMap map){
-        mService.getNearByPlaces(url)
-                .enqueue(new Callback<MyPlaces>() {
-                    @Override
-                    public void onResponse(Call<MyPlaces> call, Response<MyPlaces> response) {
-                        if(response.isSuccessful()){
-                            for(Result result : response.body().results){
-                                MarkerOptions markerOptions = new MarkerOptions();
+    @Override
+    protected List<MarkerOptions> doInBackground(Object... objects) {
 
-                                LatLng latLng = new LatLng(result.geometry.location.lat,
-                                        result.geometry.location.lng);
-                                markerOptions.position(latLng);
-                                markerOptions.title(result.name);
+        List<MarkerOptions> markers = new ArrayList<>();
+        try {
+            String pagetoken = "";
+            do {
+                Log.i(TAG, "url:  " + mUrl.getValue());
+                Response<MyPlaces> response = mService
+                        .getNearByPlaces(mUrl.getValue())
+                        .execute();
+                Log.i(TAG, "response:  " + response.body());
+                if (response!=null && response.isSuccessful()) {
+                    pagetoken = response.body().next_page_token;
+                    mUrl.updateParameter("pagetoken",pagetoken);
+                    mUrl.build();
 
-                                try {
-                                   // markerOptions.icon(BitmapDescriptorFactory.fromPath(result.icon));
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                                }catch (Exception exc){
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                                }
+                    Result[] results = response.body().results;
+                    markers.addAll(processResults(results));
+                }
+            }while (pagetoken!=null);
 
-                                map.addMarker(markerOptions);
-                            }
+            mUrl.removeParameter("pagetoken");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<MyPlaces> call, Throwable t) {
+        return markers;
+    }
 
-                    }
-                });
+    @Override
+    protected void onPostExecute(List<MarkerOptions> markers) {
+        for(MarkerOptions marker : markers){
+            mGoogleMap.addMarker(marker);
+        }
     }
 }
