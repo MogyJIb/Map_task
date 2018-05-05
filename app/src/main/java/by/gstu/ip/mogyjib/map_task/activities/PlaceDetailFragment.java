@@ -8,14 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import by.gstu.ip.mogyjib.map_task.R;
-import by.gstu.ip.mogyjib.map_task.models.Place;
+import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceDetail;
 
 public class PlaceDetailFragment extends Fragment {
 
     public static final String ARG_PLACE = "place";
-    private Place mPlace;
+    private PlaceDetail mPlace;
 
-    public static PlaceDetailFragment newInstance(Place place) {
+    public static PlaceDetailFragment newInstance(PlaceDetail place) {
         PlaceDetailFragment fragment = new PlaceDetailFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PLACE, place);
@@ -27,7 +27,7 @@ public class PlaceDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mPlace = (Place) getArguments().getSerializable(ARG_PLACE);
+            mPlace = (PlaceDetail) getArguments().getSerializable(ARG_PLACE);
         }
     }
 
