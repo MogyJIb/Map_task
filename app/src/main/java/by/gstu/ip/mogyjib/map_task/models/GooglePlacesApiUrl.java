@@ -4,26 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GooglePlacesApiUrl {
-    public static final String GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/";
-    public static final String NEARBY_SEARCH_API_URL = "maps/api/place/nearbysearch/";
+    public static final String GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/place/";
+
     public static final String JSON_TYPE = "json";
+    public static final String XML_TYPE = "xml";
 
 
     private String baseUrl;
     private Map<String,String> parameters;
-    private String apiUrl;
-    private String output;
+    private String apiName;
+    private String outputType;
 
     private StringBuilder value;
 
-    public GooglePlacesApiUrl(){
-        this(GOOGLE_MAPS_API_URL, NEARBY_SEARCH_API_URL, JSON_TYPE);
+    public GooglePlacesApiUrl(String apiName){
+        this(GOOGLE_MAPS_API_URL,
+                apiName,
+                JSON_TYPE);
     }
 
-    public GooglePlacesApiUrl(String baseUrl, String apiUrl, String output) {
+    public GooglePlacesApiUrl(String baseUrl, String apiName, String outputType) {
         this.baseUrl = baseUrl;
-        this.apiUrl = apiUrl;
-        this.output = output;
+        this.apiName = apiName;
+        this.outputType = outputType;
         this.value = new StringBuilder("");
         this.parameters = new HashMap<>();
     }
@@ -32,8 +35,9 @@ public class GooglePlacesApiUrl {
         value = new StringBuilder("");
 
         value.append(baseUrl)
-                .append(apiUrl)
-                .append(output);
+                .append(apiName)
+                .append('/')
+                .append(outputType);
 
         if(!parameters.isEmpty()) {
             value.append('?');
@@ -70,5 +74,17 @@ public class GooglePlacesApiUrl {
 
     public void removeParameter(String parameterName){
         parameters.remove(parameterName);
+    }
+
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setApiName(String apiName) {
+        this.apiName = apiName;
     }
 }

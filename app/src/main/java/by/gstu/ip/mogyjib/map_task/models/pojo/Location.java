@@ -1,11 +1,54 @@
+
 package by.gstu.ip.mogyjib.map_task.models.pojo;
 
-public class Location {
-    public double lng;
-    public double lat;
 
-    public Location(double lng, double lat) {
-        this.lng = lng;
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Location implements Serializable {
+
+    public double lat;
+    public double lng;
+
+    /**
+     * No args constructor for use in serialization
+     * 
+     */
+    public Location() {
+    }
+
+    /**
+     * 
+     * @param lng
+     * @param lat
+     */
+    public Location(double lat, double lng) {
+        super();
         this.lat = lat;
+        this.lng = lng;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "lat=" + lat +
+                ", lng=" + lng +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return Double.compare(location.lat, lat) == 0 &&
+                Double.compare(location.lng, lng) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(lat, lng);
     }
 }

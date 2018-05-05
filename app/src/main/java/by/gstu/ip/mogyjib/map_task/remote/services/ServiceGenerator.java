@@ -1,4 +1,4 @@
-package by.gstu.ip.mogyjib.map_task.remote;
+package by.gstu.ip.mogyjib.map_task.remote.services;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
