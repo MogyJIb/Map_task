@@ -1,4 +1,4 @@
-package by.gstu.ip.mogyjib.map_task.activities;
+package by.gstu.ip.mogyjib.map_task.activities.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

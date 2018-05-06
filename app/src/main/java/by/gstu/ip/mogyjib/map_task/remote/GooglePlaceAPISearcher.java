@@ -17,7 +17,7 @@ import retrofit2.Response;
 public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Object,String,Collection<T>>{
     public static final String TAG = GooglePlaceAPISearcher.class.getSimpleName();
 
-    private OnDataLoadCompleteListener<T> mOnRequestResultListener;
+    private OnDataSearchCompleteListener<T> mDataLoadCompleteListener;
     private RequestableGAPI<T> mService;
     public GooglePlacesApiUrl mUrl;
 
@@ -75,7 +75,7 @@ public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Objec
 
     @Override
     protected void onPostExecute(Collection<T> results) {
-        mOnRequestResultListener.onDataLoadComplete(results);
+        mDataLoadCompleteListener.onDataLoadComplete(results);
     }
 
 
@@ -85,8 +85,8 @@ public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Objec
         return this;
     }
 
-    public GooglePlaceAPISearcher<T> setOnRequestResultListener(OnDataLoadCompleteListener<T> onRequestResultListener) {
-        mOnRequestResultListener = onRequestResultListener;
+    public GooglePlaceAPISearcher<T> setDataLoadCompleteListener(OnDataSearchCompleteListener<T> dataLoadCompleteListener) {
+        mDataLoadCompleteListener = dataLoadCompleteListener;
         return this;
     }
 }

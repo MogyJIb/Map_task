@@ -18,7 +18,7 @@ public class Geometry implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param viewport
      * @param location
      */

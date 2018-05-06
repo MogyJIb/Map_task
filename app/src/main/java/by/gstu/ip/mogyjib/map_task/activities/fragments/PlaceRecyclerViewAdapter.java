@@ -1,5 +1,6 @@
-package by.gstu.ip.mogyjib.map_task.activities.list_activities;
+package by.gstu.ip.mogyjib.map_task.activities.fragments;
 
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,19 +8,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import by.gstu.ip.mogyjib.map_task.R;
-import by.gstu.ip.mogyjib.map_task.activities.list_activities.PlaceListFragment.OnListFragmentInteractionListener;
-import by.gstu.ip.mogyjib.map_task.activities.list_activities.DummyContent.DummyItem;
-
-import java.util.List;
+import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
+import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
 
 public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.ViewHolder> {
+    public PlaceBasicCollection mPlaceBasicCollection;
+    private OnListItemClickListener mListener;
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
-
-    public PlaceRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public PlaceRecyclerViewAdapter(OnListItemClickListener listener,
+                                    PlaceBasicCollection placeBasicCollection) {
         mListener = listener;
+        mPlaceBasicCollection = placeBasicCollection;
     }
 
     @Override
@@ -31,7 +30,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+        holder.mPlace = mPlaceBasicCollection.places.get(position);
+        holder.mPosition = position+1;
+        holder.setViewData();
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,7 +40,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListItemClick(holder.mPlace);
                 }
             }
         });
@@ -47,7 +48,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mPlaceBasicCollection.places.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,7 +56,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
         public final TextView mItemNumberView;
         public final TextView mNameView;
         public final TextView mDistanceView;
-        public DummyItem mItem;
+        public PlaceBasic mPlace;
+        public int mPosition;
 
         public ViewHolder(View view) {
             super(view);
@@ -66,9 +68,20 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
             mDistanceView = (TextView) view.findViewById(R.id.place_item_distance);
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" +  "'";
+        public void setViewData(){
+            if(mPlace==null)
+                return;
+
+            mItemNumberView.setText(mPosition+"");
+            mNameView.setText(mPlace.name);
+
+            Location currLocation = mPlaceBasicCollection.currentLocation;
+            mDistanceView.setText((int)mPlace.getLocation()
+                    .distanceTo(currLocation.getLatitude(),currLocation.getLongitude())+" m");
         }
+    }
+
+    public interface OnListItemClickListener {
+        void onListItemClick(PlaceBasic place);
     }
 }

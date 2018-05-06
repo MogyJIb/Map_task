@@ -34,6 +34,12 @@ public class PlaceBasic implements Serializable{
                 geometry.location.lng);
     }
 
+    public Location getLocation(){
+        if(geometry==null)
+            return null;
+        return geometry.location;
+    }
+
     @Override
     public String toString() {
         return "PlaceBasic{" +
