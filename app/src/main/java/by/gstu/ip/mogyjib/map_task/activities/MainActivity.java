@@ -179,7 +179,11 @@ implements OnDataSearchCompleteListener<PlaceBasicResult> {
         //save fragments
         getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT, mMapsFragment);
         getSupportFragmentManager().putFragment(outState, PLACE_LIST_FRAGMENT, mPlaceListFragment);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
         //stop location updates handle
         mLocationHandler.stopLocationUpdates();
