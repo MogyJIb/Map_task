@@ -2,9 +2,10 @@
 package by.gstu.ip.mogyjib.map_task.models.pojo;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Viewport {
+public class Viewport implements Serializable{
 
     public Location northeast;
     public Location southwest;

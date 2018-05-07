@@ -1,6 +1,5 @@
 package by.gstu.ip.mogyjib.map_task.activities.fragments;
 
-import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,14 +7,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import by.gstu.ip.mogyjib.map_task.R;
+import by.gstu.ip.mogyjib.map_task.models.OnItemClickListener;
 import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
+import by.gstu.ip.mogyjib.map_task.models.pojo.Location;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
 
 public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.ViewHolder> {
     public PlaceBasicCollection mPlaceBasicCollection;
-    private OnListItemClickListener mListener;
+    private OnItemClickListener mListener;
 
-    public PlaceRecyclerViewAdapter(OnListItemClickListener listener,
+    public PlaceRecyclerViewAdapter(OnItemClickListener listener,
                                     PlaceBasicCollection placeBasicCollection) {
         mListener = listener;
         mPlaceBasicCollection = placeBasicCollection;
@@ -34,14 +35,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
         holder.mPosition = position+1;
         holder.setViewData();
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListItemClick(holder.mPlace);
-                }
+        holder.mView.setOnClickListener(v -> {
+            if (null != mListener) {
+                // Notify the active callbacks interface (the activity, if the
+                // fragment is attached to one) that an item has been selected.
+                mListener.onItemClick(holder.mPlace);
             }
         });
     }
@@ -77,11 +75,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
             Location currLocation = mPlaceBasicCollection.currentLocation;
             mDistanceView.setText((int)mPlace.getLocation()
-                    .distanceTo(currLocation.getLatitude(),currLocation.getLongitude())+" m");
+                    .distanceTo(currLocation)+" m");
         }
     }
 
-    public interface OnListItemClickListener {
-        void onListItemClick(PlaceBasic place);
-    }
+
 }

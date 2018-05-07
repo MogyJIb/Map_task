@@ -1,5 +1,6 @@
 package by.gstu.ip.mogyjib.map_task.activities.fragments;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,11 +14,14 @@ import android.view.ViewGroup;
 
 
 import by.gstu.ip.mogyjib.map_task.R;
+import by.gstu.ip.mogyjib.map_task.activities.PlaceDetailActivity;
+import by.gstu.ip.mogyjib.map_task.models.OnItemClickListener;
 import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
+import static by.gstu.ip.mogyjib.map_task.activities.PlaceDetailActivity.PLACE_ID;
 
 
-public class PlaceListFragment extends Fragment implements PlaceRecyclerViewAdapter.OnListItemClickListener {
+public class PlaceListFragment extends Fragment {
 
     private PlaceBasicCollection mPlaceCollection;
     private RecyclerView mRecyclerView;
@@ -40,9 +44,11 @@ public class PlaceListFragment extends Fragment implements PlaceRecyclerViewAdap
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
+
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        mAdapter = new PlaceRecyclerViewAdapter(this, mPlaceCollection);
+        createAdapter();
         createRecyclerView(view);
 
         return view;
@@ -51,7 +57,7 @@ public class PlaceListFragment extends Fragment implements PlaceRecyclerViewAdap
     public void updateList(PlaceBasicCollection placeCollection) {
         mPlaceCollection = placeCollection;
 
-        mAdapter = new PlaceRecyclerViewAdapter(this, mPlaceCollection);
+        createAdapter();
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -68,8 +74,12 @@ public class PlaceListFragment extends Fragment implements PlaceRecyclerViewAdap
         mRecyclerView.addItemDecoration(dividerItemDecoration);
     }
 
-    @Override
-    public void onListItemClick(PlaceBasic place) {
-
+    private void createAdapter(){
+        mAdapter = new PlaceRecyclerViewAdapter((OnItemClickListener<PlaceBasic>) item -> {
+            Intent intent = new Intent(getContext(), PlaceDetailActivity.class);
+            intent.putExtra(PLACE_ID,item.place_id);
+            startActivity(intent);
+        }, mPlaceCollection);
     }
+
 }

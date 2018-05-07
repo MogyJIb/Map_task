@@ -11,7 +11,7 @@ public class PlaceBasic implements Serializable{
 
     public Geometry geometry;
     public String name;
-    public String placeId;
+    public String place_id;
     /**
      * No args constructor for use in serialization
      * 
@@ -20,10 +20,10 @@ public class PlaceBasic implements Serializable{
     }
 
 
-    public PlaceBasic(Geometry geometry, String name, String placeId) {
+    public PlaceBasic(Geometry geometry, String name, String place_id) {
         this.geometry = geometry;
         this.name = name;
-        this.placeId = placeId;
+        this.place_id = place_id;
     }
 
     public LatLng getLatlng(){
@@ -45,7 +45,7 @@ public class PlaceBasic implements Serializable{
         return "PlaceBasic{" +
                 "geometry=" + geometry +
                 ", name='" + name + '\'' +
-                ", placeId='" + placeId + '\'' +
+                ", placeId='" + place_id + '\'' +
                 '}';
     }
 
@@ -56,12 +56,12 @@ public class PlaceBasic implements Serializable{
         PlaceBasic that = (PlaceBasic) o;
         return Objects.equals(geometry, that.geometry) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(placeId, that.placeId);
+                Objects.equals(place_id, that.place_id);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(geometry, name, placeId);
+        return Objects.hash(geometry, name, place_id);
     }
 }

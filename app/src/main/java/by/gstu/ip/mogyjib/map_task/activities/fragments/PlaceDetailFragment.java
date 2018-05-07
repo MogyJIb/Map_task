@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import by.gstu.ip.mogyjib.map_task.R;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceDetail;
@@ -15,26 +16,55 @@ public class PlaceDetailFragment extends Fragment {
     public static final String ARG_PLACE = "place";
     private PlaceDetail mPlace;
 
-    public static PlaceDetailFragment newInstance(PlaceDetail place) {
-        PlaceDetailFragment fragment = new PlaceDetailFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PLACE, place);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private TextView mPhoneTV,
+            mNameTV,
+            mAddressTV,
+            mmWebsiteTV,
+            mLocationTV;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mPlace = (PlaceDetail) getArguments().getSerializable(ARG_PLACE);
-        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_place_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_place_detail, container, false);
+
+        initializeComponents(view);
+        updatePlaceInformationFields(mPlace);
+        return view;
+    }
+
+    private void initializeComponents(View view) {
+        mPhoneTV = view.findViewById(R.id.place_phone);
+        mNameTV = view.findViewById(R.id.place_name);
+        mAddressTV = view.findViewById(R.id.place_address);
+        mmWebsiteTV = view.findViewById(R.id.place_website);
+        mLocationTV = view.findViewById(R.id.place_location);
+    }
+
+    public void updatePlaceInformationFields(PlaceDetail placeDetail){
+        this.mPlace = placeDetail;
+        if(mPlace==null)
+            return;
+
+        setTextViewData( mPhoneTV,mPlace.international_phone_number);
+        setTextViewData(mNameTV,mPlace.name);
+        setTextViewData(mAddressTV,mPlace.formatted_address);
+        setTextViewData(mmWebsiteTV,mPlace.website);
+        setTextViewData(mLocationTV,mPlace.geometry.location.toString());
+    }
+    private void setTextViewData(TextView textView, String data){
+        if(data!=null && !data.isEmpty())
+            textView.setText(data);
+        else
+            textView.setText(getString(R.string.unknown));
+
     }
 }

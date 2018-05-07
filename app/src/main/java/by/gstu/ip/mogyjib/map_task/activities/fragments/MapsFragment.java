@@ -1,9 +1,11 @@
 package by.gstu.ip.mogyjib.map_task.activities.fragments;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,22 +19,36 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import by.gstu.ip.mogyjib.map_task.R;
+import by.gstu.ip.mogyjib.map_task.activities.PlaceDetailActivity;
 import by.gstu.ip.mogyjib.map_task.locations.LocationUtil;
 import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
+import by.gstu.ip.mogyjib.map_task.models.pojo.Location;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
 
-public class MapsFragment extends Fragment
-        implements OnMapReadyCallback{
-    private static final String TAG = MapsFragment.class.getSimpleName();
+import static by.gstu.ip.mogyjib.map_task.activities.PlaceDetailActivity.PLACE_ID;
 
-    private PlaceBasicCollection mPlaceCollection;
+public class MapsFragment extends Fragment
+        implements OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener
+{
+
+    private static final String TAG = MapsFragment.class.getSimpleName();
+    private final String MAP = "map",
+                MARKERS = "markers",
+                PLACES = "places";
+
     private SupportMapFragment mSupportMapFragment;
+    private PlaceBasicCollection mPlaceCollection;
     private GoogleMap mMap;
+    private ArrayList<String> mMarkerIds;
 
     public MapsFragment(){
     }
@@ -40,18 +56,21 @@ public class MapsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMarkerIds = new ArrayList<>();
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
         // Inflate the layout for this fragment
         View view = inflater
                 .inflate(R.layout.fragment_maps, container, false);
-        mSupportMapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
-
+        mSupportMapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mSupportMapFragment.setRetainInstance(true);
         mSupportMapFragment.getMapAsync(this);
-
         return view;
     }
 
@@ -62,6 +81,8 @@ public class MapsFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+        mMap.setOnInfoWindowClickListener(this);
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -92,21 +113,26 @@ public class MapsFragment extends Fragment
         mMap.addMarker(markerOptions);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-        float zoom = mMap.getCameraPosition().zoom;
-        if(zoom< 13)
-         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
     }
 
     private void setNearbyPlaces(Collection<PlaceBasic> places){
         for(PlaceBasic place : places){
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .title(place.name)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .position(place.getLatlng());
-
-            mMap.addMarker(markerOptions);
+            MarkerOptions markerOptions = getMarkerOptions(place);
+            mMarkerIds.add(mMap.addMarker(markerOptions).getId());
         }
+    }
+    private MarkerOptions getMarkerOptions(PlaceBasic place){
+        Location currLocation = mPlaceCollection.currentLocation;
+
+        MarkerOptions markerOptions = new MarkerOptions()
+                .title(place.name)
+                .snippet("distance: "+(int)place.getLocation().distanceTo(currLocation)+" m")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .position(place.getLatlng())
+                .alpha(0.8f)
+                .flat(true);
+
+        return markerOptions;
     }
 
 
@@ -114,8 +140,21 @@ public class MapsFragment extends Fragment
         mPlaceCollection = placeCollection;
 
         mMap.clear();
-        setCurrLocationMarker(mPlaceCollection.currentLocation.getLatitude(),
-                mPlaceCollection.currentLocation.getLongitude());
+        setCurrLocationMarker(mPlaceCollection.currentLocation.lat,
+                mPlaceCollection.currentLocation.lng);
         setNearbyPlaces(mPlaceCollection.places);
+    }
+
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        int index = mMarkerIds.indexOf(marker.getId());
+        if(index<0||index>=mPlaceCollection.places.size())
+            return;
+        PlaceBasic placeBasic = mPlaceCollection.places.get(index);
+
+        Intent intent = new Intent(getContext(), PlaceDetailActivity.class);
+        intent.putExtra(PLACE_ID,placeBasic.place_id);
+        startActivity(intent);
     }
 }

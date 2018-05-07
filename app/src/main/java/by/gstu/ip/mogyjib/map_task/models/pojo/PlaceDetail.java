@@ -9,28 +9,26 @@ import java.util.Objects;
 
 public class PlaceDetail implements Serializable{
 
-    public String formattedAddress;
+    public String formatted_address;
     public Geometry geometry;
     public String icon;
-    public String internationalPhoneNumber;
+    public String international_phone_number;
     public String name;
-    public String placeId;
-    public List<String> types = null;
+    public String place_id;
     public String website;
 
     public PlaceDetail() {
     }
 
-    public PlaceDetail(String formattedAddress, Geometry geometry, String icon,
-                       String internationalPhoneNumber, String name,
-                       String placeId, List<String> types, String website) {
-        this.formattedAddress = formattedAddress;
+    public PlaceDetail(String formatted_address, Geometry geometry, String icon,
+                       String international_phone_number, String name,
+                       String place_id, String website) {
+        this.formatted_address = formatted_address;
         this.geometry = geometry;
         this.icon = icon;
-        this.internationalPhoneNumber = internationalPhoneNumber;
+        this.international_phone_number = international_phone_number;
         this.name = name;
-        this.placeId = placeId;
-        this.types = types;
+        this.place_id = place_id;
         this.website = website;
     }
 
@@ -45,13 +43,12 @@ public class PlaceDetail implements Serializable{
     @Override
     public String toString() {
         return "PlaceDetail{" +
-                "formattedAddress='" + formattedAddress + '\'' +
+                "formattedAddress='" + formatted_address + '\'' +
                 ", geometry=" + geometry +
                 ", icon='" + icon + '\'' +
-                ", internationalPhoneNumber='" + internationalPhoneNumber + '\'' +
+                ", internationalPhoneNumber='" + international_phone_number + '\'' +
                 ", name='" + name + '\'' +
-                ", placeId='" + placeId + '\'' +
-                ", types=" + types +
+                ", placeId='" + place_id + '\'' +
                 ", website='" + website + '\'' +
                 '}';
     }
@@ -61,19 +58,18 @@ public class PlaceDetail implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlaceDetail that = (PlaceDetail) o;
-        return Objects.equals(formattedAddress, that.formattedAddress) &&
+        return Objects.equals(formatted_address, that.formatted_address) &&
                 Objects.equals(geometry, that.geometry) &&
                 Objects.equals(icon, that.icon) &&
-                Objects.equals(internationalPhoneNumber, that.internationalPhoneNumber) &&
+                Objects.equals(international_phone_number, that.international_phone_number) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(placeId, that.placeId) &&
-                Objects.equals(types, that.types) &&
+                Objects.equals(place_id, that.place_id) &&
                 Objects.equals(website, that.website);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(formattedAddress, geometry, icon, internationalPhoneNumber, name, placeId, types, website);
+        return Objects.hash(formatted_address, geometry, icon, international_phone_number, name, place_id, website);
     }
 }

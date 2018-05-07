@@ -4,8 +4,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +16,7 @@ import by.gstu.ip.mogyjib.map_task.models.results.Paginated;
 import by.gstu.ip.mogyjib.map_task.remote.services.RequestableGAPI;
 import retrofit2.Response;
 
-public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Object,String,Collection<T>>{
+public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Object,String,List<T>>{
     public static final String TAG = GooglePlaceAPISearcher.class.getSimpleName();
 
     private OnDataSearchCompleteListener<T> mDataLoadCompleteListener;
@@ -37,7 +39,7 @@ public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Objec
     }
 
     @Override
-    protected Collection<T> doInBackground(Object... objects) {
+    protected List<T> doInBackground(Object... objects) {
         boolean isContinue = true;
 
         Set<T> results = new HashSet<>();
@@ -70,11 +72,12 @@ public class GooglePlaceAPISearcher<T extends Paginated> extends AsyncTask<Objec
             } while (isContinue);
 
             mUrl.removeParameter("pagetoken");
-        return results;
+
+        return new ArrayList<>(results);
     }
 
     @Override
-    protected void onPostExecute(Collection<T> results) {
+    protected void onPostExecute(List<T> results) {
         mDataLoadCompleteListener.onDataLoadComplete(results);
     }
 

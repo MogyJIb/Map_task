@@ -1,9 +1,11 @@
 package by.gstu.ip.mogyjib.map_task.locations;
 
 import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +26,10 @@ public class UpdateLocationCallback
     public int searchRadius;
     public String apiKey;
 
-    public UpdateLocationCallback(OnDataSearchCompleteListener<PlaceBasicResult> dataLoadCompleteListener,
-                                  String searchPlaceType,
+    public UpdateLocationCallback(String searchPlaceType,
                                   int searchRadius,
                                   String apiKey) {
 
-        mDataLoadCompleteListener = dataLoadCompleteListener;
         this.searchPlaceType = searchPlaceType;
         this.apiKey = apiKey;
         this.searchRadius = searchRadius;
@@ -74,5 +74,15 @@ public class UpdateLocationCallback
 
     public Location getLastLocation() {
         return mLastLocation;
+    }
+
+    public UpdateLocationCallback setLastLocation(Location location) {
+        mLastLocation = location;
+        return this;
+    }
+
+    public UpdateLocationCallback setDataLoadCompleteListener(OnDataSearchCompleteListener<PlaceBasicResult> dataLoadCompleteListener) {
+        mDataLoadCompleteListener = dataLoadCompleteListener;
+        return this;
     }
 }

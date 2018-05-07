@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -22,6 +23,7 @@ import by.gstu.ip.mogyjib.map_task.locations.LocationHandler;
 import by.gstu.ip.mogyjib.map_task.locations.UpdateLocationCallback;
 import by.gstu.ip.mogyjib.map_task.locations.LocationUtil;
 import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
+import by.gstu.ip.mogyjib.map_task.models.pojo.Location;
 import by.gstu.ip.mogyjib.map_task.models.results.PlaceBasicResult;
 import by.gstu.ip.mogyjib.map_task.remote.OnDataSearchCompleteListener;
 
@@ -29,29 +31,38 @@ public class MainActivity
         extends AppCompatActivity
 implements OnDataSearchCompleteListener<PlaceBasicResult>{
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    public static final String LOCATION = "location";
+    public static final String PLACES = "places";
+    public static final String MAP_FRAGMENT = "map fragment";
+    public static final String PLACE_LIST_FRAGMENT = "place list fragment";
 
     private LocationHandler mLocationHandler;
     private UpdateLocationCallback mUpdateLocationCallback;
 
     private PlaceBasicCollection mPlaceBasicCollection;
+    private android.location.Location mLastLocation;
 
     private MapsFragment mMapsFragment;
     private PlaceListFragment mPlaceListFragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPlaceBasicCollection = new PlaceBasicCollection();
+        if(savedInstanceState==null)
+            mPlaceBasicCollection = new PlaceBasicCollection();
+        else {
+            mPlaceBasicCollection = (PlaceBasicCollection) savedInstanceState.getSerializable(PLACES);
+            mLastLocation = savedInstanceState.getParcelable(LOCATION);
+        }
 
-        mUpdateLocationCallback = new UpdateLocationCallback(this,
+        mUpdateLocationCallback = new UpdateLocationCallback(
                 "atm",
                 1000,
-                getResources().getString(R.string.browser_google_maps_key));
+                getResources().getString(R.string.browser_google_maps_key))
+            .setDataLoadCompleteListener(this)
+            .setLastLocation(mLastLocation);
 
         mLocationHandler=new LocationHandler(this, mUpdateLocationCallback);
 
@@ -63,26 +74,48 @@ implements OnDataSearchCompleteListener<PlaceBasicResult>{
         }
 
 
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(createAdapter(viewPager,savedInstanceState));
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private ViewPagerAdapter createAdapter(ViewPager viewPager,Bundle savedInstanceState) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        mMapsFragment = new MapsFragment();
-        adapter.addFragment(mMapsFragment, "Map");
+        if(savedInstanceState == null){
+            mMapsFragment = new MapsFragment();
+            mPlaceListFragment = new PlaceListFragment();
+        }else {
+            mMapsFragment = (MapsFragment) getSupportFragmentManager()
+                    .getFragment(savedInstanceState,MAP_FRAGMENT);
+            mPlaceListFragment = (PlaceListFragment) getSupportFragmentManager()
+                    .getFragment(savedInstanceState,PLACE_LIST_FRAGMENT);
+        }
 
-        mPlaceListFragment = new PlaceListFragment();
+        adapter.addFragment(mMapsFragment, "Map");
         adapter.addFragment(mPlaceListFragment, "List");
 
-        viewPager.setAdapter(adapter);
+        return adapter;
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(PLACES,mPlaceBasicCollection);
+        outState.putParcelable(LOCATION,mLastLocation);
+
+        getSupportFragmentManager().putFragment(outState,MAP_FRAGMENT,mMapsFragment);
+        getSupportFragmentManager().putFragment(outState,PLACE_LIST_FRAGMENT,mPlaceListFragment);
+
+        mLocationHandler.stopLocationUpdates();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -97,13 +130,15 @@ implements OnDataSearchCompleteListener<PlaceBasicResult>{
     }
 
     @Override
-    public void onDataLoadComplete(Collection<PlaceBasicResult> results) {
+    public void onDataLoadComplete(List<PlaceBasicResult> results) {
         mPlaceBasicCollection.clear();
         for (PlaceBasicResult placeResult : results) {
             mPlaceBasicCollection.places.addAll(placeResult.results);
         }
-        mPlaceBasicCollection.currentLocation =
-                mUpdateLocationCallback.getLastLocation();
+        mLastLocation = mUpdateLocationCallback.getLastLocation();
+        mPlaceBasicCollection.currentLocation = new Location(mLastLocation.getLatitude(),
+                mLastLocation.getLongitude());
+
 
         mPlaceBasicCollection.sort();
 
@@ -112,7 +147,7 @@ implements OnDataSearchCompleteListener<PlaceBasicResult>{
     }
 
 
-    private class ViewPagerAdapter extends FragmentPagerAdapter {
+    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 

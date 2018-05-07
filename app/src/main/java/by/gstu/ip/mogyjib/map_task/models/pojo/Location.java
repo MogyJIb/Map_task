@@ -29,19 +29,16 @@ public class Location implements Serializable {
     }
 
 
-    public float distanceTo(double lat,double lng){
+    public float distanceTo(Location location){
         float[] results = new float[1];
         android.location.Location
-                .distanceBetween(this.lat,this.lng,lat,lng,results);
+                .distanceBetween(this.lat,this.lng,location.lat,location.lng,results);
         return results[0];
     }
 
     @Override
     public String toString() {
-        return "Location{" +
-                "lat=" + lat +
-                ", lng=" + lng +
-                '}';
+        return  lat + ", " + lng;
     }
 
     @Override
