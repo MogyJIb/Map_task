@@ -2,7 +2,6 @@
 package by.gstu.ip.mogyjib.map_task.models.results;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceDetail;
@@ -19,11 +18,7 @@ public class PlaceDetailResult implements Serializable,Paginated{
     public PlaceDetailResult() {
     }
 
-    /**
-     * 
-     * @param result
-     * @param status
-     */
+
     public PlaceDetailResult(PlaceDetail result, String status) {
         super();
         this.result = result;

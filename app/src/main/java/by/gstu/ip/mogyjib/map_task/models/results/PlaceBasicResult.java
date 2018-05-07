@@ -3,7 +3,6 @@ package by.gstu.ip.mogyjib.map_task.models.results;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
@@ -21,12 +20,7 @@ public class PlaceBasicResult implements Serializable, Paginated{
     public PlaceBasicResult() {
     }
 
-    /**
-     * 
-     * @param results
-     * @param status
-     * @param next_page_token
-     */
+
     public PlaceBasicResult(String next_page_token, Collection<PlaceBasic> results, String status) {
         super();
         this.next_page_token = next_page_token;

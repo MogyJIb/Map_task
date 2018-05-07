@@ -5,12 +5,10 @@ import org.junit.Test;
 
 import by.gstu.ip.mogyjib.map_task.models.GooglePlacesApiUrl;
 
-import static org.junit.Assert.assertEquals;
-
 public class GooglePlacesApiUrlTest {
     @Test
     public void build_no_parameter() {
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.build();
 
         String expected =  "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
@@ -20,7 +18,7 @@ public class GooglePlacesApiUrlTest {
 
     @Test
     public void build_with_parameter() {
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.build();
 
@@ -31,7 +29,7 @@ public class GooglePlacesApiUrlTest {
 
     @Test
     public void build_with_parameters() {
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.setParameter("key","key_app");
         url.build();
@@ -43,7 +41,7 @@ public class GooglePlacesApiUrlTest {
 
     @Test
     public void remove_parameter() {
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.removeParameter("location");
         url.build();
@@ -55,7 +53,7 @@ public class GooglePlacesApiUrlTest {
 
     @Test
     public void update_parameter() {
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.updateParameter("location","52,30");
         url.build();
@@ -68,7 +66,7 @@ public class GooglePlacesApiUrlTest {
     @Test
     public void remove_pagetoken_parameter(){
 
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.setParameter("key","key_app");
         url.setParameter("pagetoken","CqQCFwEAAJ");
@@ -83,7 +81,7 @@ public class GooglePlacesApiUrlTest {
     @Test
     public void remove_key_parameter(){
 
-        GooglePlacesApiUrl url = new GooglePlacesApiUrl();
+        GooglePlacesApiUrl url = new GooglePlacesApiUrl("nearbysearch");
         url.setParameter("location","52.4547,30.9348");
         url.setParameter("key","key_app");
         url.setParameter("pagetoken","CqQCFwEAAJ");

@@ -11,9 +11,14 @@ import android.widget.TextView;
 import by.gstu.ip.mogyjib.map_task.R;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceDetail;
 
+/**
+ * Fragment will represent all detail place information.
+ *
+ * @author Evgeniy Shevtsov
+ * @version 1.0
+ */
 public class PlaceDetailFragment extends Fragment {
 
-    public static final String ARG_PLACE = "place";
     private PlaceDetail mPlace;
 
     private TextView mPhoneTV,
@@ -22,11 +27,6 @@ public class PlaceDetailFragment extends Fragment {
             mmWebsiteTV,
             mLocationTV;
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -41,6 +41,11 @@ public class PlaceDetailFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Find all container views and initialize it
+     *
+     * @param view container view
+     */
     private void initializeComponents(View view) {
         mPhoneTV = view.findViewById(R.id.place_phone);
         mNameTV = view.findViewById(R.id.place_name);
@@ -49,22 +54,33 @@ public class PlaceDetailFragment extends Fragment {
         mLocationTV = view.findViewById(R.id.place_location);
     }
 
-    public void updatePlaceInformationFields(PlaceDetail placeDetail){
+    /**
+     * Update all fields with new place information
+     *
+     * @param placeDetail
+     */
+    public void updatePlaceInformationFields(PlaceDetail placeDetail) {
         this.mPlace = placeDetail;
-        if(mPlace==null)
+        if (mPlace == null)
             return;
 
-        setTextViewData( mPhoneTV,mPlace.international_phone_number);
-        setTextViewData(mNameTV,mPlace.name);
-        setTextViewData(mAddressTV,mPlace.formatted_address);
-        setTextViewData(mmWebsiteTV,mPlace.website);
-        setTextViewData(mLocationTV,mPlace.geometry.location.toString());
+        setTextViewData(mPhoneTV, mPlace.international_phone_number);
+        setTextViewData(mNameTV, mPlace.name);
+        setTextViewData(mAddressTV, mPlace.formatted_address);
+        setTextViewData(mmWebsiteTV, mPlace.website);
+        setTextViewData(mLocationTV, mPlace.geometry.location.toString());
     }
-    private void setTextViewData(TextView textView, String data){
-        if(data!=null && !data.isEmpty())
+
+    /**
+     * Method set string text to view if it's not null
+     *
+     * @param textView text view
+     * @param data     string text
+     */
+    private void setTextViewData(TextView textView, String data) {
+        if (data != null && !data.isEmpty())
             textView.setText(data);
         else
             textView.setText(getString(R.string.unknown));
-
     }
 }

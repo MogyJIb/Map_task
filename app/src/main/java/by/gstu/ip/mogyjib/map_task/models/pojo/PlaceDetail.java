@@ -4,7 +4,6 @@ package by.gstu.ip.mogyjib.map_task.models.pojo;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 
 public class PlaceDetail implements Serializable{

@@ -9,6 +9,7 @@
     <string name="phone">phone</string>
     <string name="website">website</string>
     <string name="unknown">unknown... .. .</string>
+    <string name="distance">distance:</string>
     <string-array name="place_types_array">
         <item>atm</item>
         <item>bank</item>
