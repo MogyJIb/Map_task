@@ -1,4 +1,4 @@
-package by.gstu.ip.mogyjib.map_task.activities.fragments;
+package by.gstu.ip.mogyjib.map_task.activities.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

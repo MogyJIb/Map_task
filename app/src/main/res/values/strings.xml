@@ -9,4 +9,18 @@
     <string name="phone">phone</string>
     <string name="website">website</string>
     <string name="unknown">unknown... .. .</string>
+    <string-array name="place_types_array">
+        <item>atm</item>
+        <item>bank</item>
+        <item>bar</item>
+        <item>cafe</item>
+        <item>gym</item>
+        <item>hospital</item>
+        <item>lawyer</item>
+        <item>library</item>
+        <item>museum</item>
+        <item>park</item>
+        <item>store</item>
+        <item>supermarket</item>
+    </string-array>
 </resources>

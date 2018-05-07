@@ -140,6 +140,7 @@ public class MapsFragment extends Fragment
         mPlaceCollection = placeCollection;
 
         mMap.clear();
+        mMarkerIds.clear();
         setCurrLocationMarker(mPlaceCollection.currentLocation.lat,
                 mPlaceCollection.currentLocation.lng);
         setNearbyPlaces(mPlaceCollection.places);

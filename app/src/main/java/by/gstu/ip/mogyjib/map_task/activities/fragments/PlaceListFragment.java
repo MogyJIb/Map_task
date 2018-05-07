@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import by.gstu.ip.mogyjib.map_task.R;
 import by.gstu.ip.mogyjib.map_task.activities.PlaceDetailActivity;
+import by.gstu.ip.mogyjib.map_task.activities.adapters.PlaceRecyclerViewAdapter;
 import by.gstu.ip.mogyjib.map_task.models.OnItemClickListener;
 import by.gstu.ip.mogyjib.map_task.models.PlaceBasicCollection;
 import by.gstu.ip.mogyjib.map_task.models.pojo.PlaceBasic;
