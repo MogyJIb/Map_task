@@ -95,6 +95,7 @@ public class MapsFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         //Set click listener on marker inform window
         mMap.setOnInfoWindowClickListener(this);

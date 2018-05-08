@@ -60,7 +60,9 @@ implements OnDataSearchCompleteListener<PlaceBasicResult> {
     //Data collections
     private PlaceBasicCollection mPlaceBasicCollection;
     private android.location.Location mLastLocation;
-    private String mPlaceType;
+
+    private String[] mPlaceTypes;
+    private int mSelectedTypeIndex;
 
     //Fragments which shown in tabs
     private MapsFragment mMapsFragment;
@@ -93,15 +95,16 @@ implements OnDataSearchCompleteListener<PlaceBasicResult> {
     private void createModels(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             mPlaceBasicCollection = new PlaceBasicCollection();
-            mPlaceType = "atm";
+            mSelectedTypeIndex = 0;
         } else {
             mPlaceBasicCollection = (PlaceBasicCollection) savedInstanceState.getSerializable(PLACES);
             mLastLocation = savedInstanceState.getParcelable(LOCATION);
-            mPlaceType = savedInstanceState.getString(PLACE_TYPE);
+            mSelectedTypeIndex = savedInstanceState.getInt(PLACE_TYPE);
         }
+        mPlaceTypes =  getResources().getStringArray(R.array.place_types_array);
 
         mUpdateLocationCallback = new UpdateLocationCallback(
-                mPlaceType,
+                mPlaceTypes[mSelectedTypeIndex],
                 RADIUS,
                 getResources().getString(R.string.browser_google_maps_key))
                 .setDataLoadCompleteListener(this)
@@ -149,17 +152,16 @@ implements OnDataSearchCompleteListener<PlaceBasicResult> {
     private void createButton() {
         FloatingActionButton choosePlaceTypeButton = findViewById(R.id.fb_choose_place_type);
         choosePlaceTypeButton.setOnClickListener(view -> {
-            String[] placeTypes = getResources().getStringArray(R.array.place_types_array);
             new AlertDialog.Builder(this)
                     .setTitle("Select place type")
 
                     //user choose item
-                    .setSingleChoiceItems(placeTypes, 0, (dialogInterface, selectedIndex)
-                            -> mPlaceType = placeTypes[selectedIndex])
+                    .setSingleChoiceItems(mPlaceTypes, mSelectedTypeIndex, (dialogInterface, selectedIndex)
+                            -> mSelectedTypeIndex = selectedIndex)
 
                     //user OK button and listener
                     .setPositiveButton("Ok", (dialogInterface, i)
-                            -> mUpdateLocationCallback.setSearchPlaceType(mPlaceType))
+                            -> mUpdateLocationCallback.setSearchPlaceType(mPlaceTypes[mSelectedTypeIndex]))
 
                     //no cancel button
                     .setNegativeButton("Cancel", null)
@@ -174,7 +176,7 @@ implements OnDataSearchCompleteListener<PlaceBasicResult> {
         //save variables
         outState.putSerializable(PLACES, mPlaceBasicCollection);
         outState.putParcelable(LOCATION, mLastLocation);
-        outState.putString(PLACE_TYPE, mPlaceType);
+        outState.putInt(PLACE_TYPE, mSelectedTypeIndex);
 
         //save fragments
         getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT, mMapsFragment);
