@@ -58,7 +58,7 @@ public class UpdateLocationCallback
         this.searchPlaceType = searchPlaceType;
         this.apiKey = apiKey;
         this.searchRadius = searchRadius;
-        isParametersUpdated = true;
+        isParametersUpdated = false;
     }
 
     //Called from some time periodic when get user location
@@ -137,11 +137,9 @@ public class UpdateLocationCallback
      * @return reference to this object
      */
     public UpdateLocationCallback setLastLocation(Location location) {
-        synchronized (isParametersUpdated) {
-            mLastLocation = location;
-            isParametersUpdated = true;
-            return this;
-        }
+        mLastLocation = location;
+        return this;
+
     }
 
     /**
@@ -152,10 +150,8 @@ public class UpdateLocationCallback
      * @return reference to this object
      */
     public UpdateLocationCallback setDataLoadCompleteListener(OnDataSearchCompleteListener<PlaceBasicResult> dataLoadCompleteListener) {
-        synchronized (isParametersUpdated) {
-            mDataLoadCompleteListener = dataLoadCompleteListener;
-            return this;
-        }
+        mDataLoadCompleteListener = dataLoadCompleteListener;
+        return this;
     }
 
     /*
